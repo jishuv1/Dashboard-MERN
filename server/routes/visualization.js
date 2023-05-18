@@ -1,8 +1,9 @@
 import express from 'express';
-import { getData } from '../controllers/visualization.js';
+import { getData, getDataEndYear } from '../controllers/visualization.js';
 
 const router = express.Router();
 
-router.get('/datavisualizations', getData);
+router.get('/data', getData);
+router.get('/dataendyear', getDataEndYear);
 
 export default router;
