@@ -11,7 +11,22 @@ export const getData = async (req, res) => {
 
 export const getDataEndYear = async (req, res) => {
   try {
-    const data = await DataVisualization.find({ end_year: { $gt: 0 } }).sort({
+    const projection = {
+      end_year: 1,
+      intensity: 1,
+      impact: 1,
+      relevance: 1,
+      likelihood: 1,
+      topic: 1,
+      country: 1,
+      region: 1,
+    };
+    const data = await DataVisualization.find(
+      {
+        end_year: { $ne: null },
+      },
+      projection
+    ).sort({
       end_year: 1,
     });
     res.status(200).json(data);
