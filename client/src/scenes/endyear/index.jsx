@@ -12,7 +12,7 @@ const Endyear = () => {
   const { data, isLoading } = useGetDataEndyearQuery();
   const theme = useTheme();
 
-  const [formattedDataLine] = useMemo(() => {
+  const [formattedDataLine, sortedYears] = useMemo(() => {
     if (!data) return [];
 
     const impactLine = {
@@ -36,45 +36,47 @@ const Endyear = () => {
       data: [],
     };
 
-    Object.values(data).forEach(
-      ({ end_year, impact, intensity, relevance, likelihood }) => {
-        const dateFormatted = new Date(end_year, 0, 1);
-        if (
-          dateFormatted >= startDate &&
-          dateFormatted <= endDate &&
-          impact !== null && // Skip empty values
-          intensity !== null && // Skip empty values
-          relevance !== null &&
-          likelihood !== null
-        ) {
-          const yearDate = new Date(end_year, 0, 1);
-          impactLine.data = [
-            ...impactLine.data,
-            { x: yearDate.getFullYear(), y: impact },
-          ];
-          intensityLine.data = [
-            ...intensityLine.data,
-            { x: yearDate.getFullYear(), y: intensity },
-          ];
-          relevanceLine.data = [
-            ...relevanceLine.data,
-            { x: yearDate.getFullYear(), y: relevance },
-          ];
-          likelihoodLine.data = [
-            ...likelihoodLine.data,
-            { x: yearDate.getFullYear(), y: likelihood },
-          ];
-        }
-      }
-    );
+    // Create a set to keep track of unique years
+    const uniqueYears = new Set();
 
+    // Iterate over data to collect unique years and populate the data arrays
+    for (const { end_year, impact, intensity, relevance, likelihood } of data) {
+      const yearDate = new Date(end_year, 0, 1);
+      if (yearDate >= startDate && yearDate <= endDate) {
+        const year = yearDate.getFullYear();
+        uniqueYears.add(year);
+
+        impactLine.data.push({ x: year, y: impact });
+        intensityLine.data.push({ x: year, y: intensity });
+        relevanceLine.data.push({ x: year, y: relevance });
+        likelihoodLine.data.push({ x: year, y: likelihood });
+      }
+    }
+
+    // Sort the years in ascending order
+    const sortedYears = Array.from(uniqueYears).sort((a, b) => a - b);
+
+    // Fill in missing years with default data
     const formattedDataLine = [
       impactLine,
       intensityLine,
       relevanceLine,
       likelihoodLine,
-    ];
-    return [formattedDataLine];
+    ].map((line) => ({
+      ...line,
+      data: sortedYears.map((year) => {
+        const existingData = line.data.find((d) => d.x === year);
+        const defaultValue = { x: year, y: 0 };
+
+        if (existingData) {
+          return { ...existingData }; // Clone the existing data
+        } else {
+          return defaultValue;
+        }
+      }),
+    }));
+
+    return [formattedDataLine, sortedYears]; // Return sortedYears as well
   }, [data, startDate, endDate]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // console.log(formattedDataLine);
@@ -84,35 +86,44 @@ const Endyear = () => {
 
     const formattedDataBar = {};
 
-    // Populate formattedDataBar object with default values for each year
-    for (const item of data) {
-      const year = item.end_year;
+    // Accumulate values and count occurrences for each year
+    for (const { end_year, impact, intensity, relevance, likelihood } of data) {
+      const year = end_year;
       if (!formattedDataBar[year]) {
         formattedDataBar[year] = {
           year,
-          intensity: 0,
           impact: 0,
+          intensity: 0,
           relevance: 0,
           likelihood: 0,
+          count: 0,
         };
       }
-    }
 
-    // Assign actual data values to corresponding years
-    for (const item of data) {
-      const year = item.end_year;
+      // Accumulate the values for each property within a year
       formattedDataBar[year] = {
         ...formattedDataBar[year],
-        intensity: item.intensity,
-        impact: item.impact,
-        relevance: item.relevance,
-        likelihood: item.likelihood,
+        impact: formattedDataBar[year].impact + impact,
+        intensity: formattedDataBar[year].intensity + intensity,
+        relevance: formattedDataBar[year].relevance + relevance,
+        likelihood: formattedDataBar[year].likelihood + likelihood,
+        count: formattedDataBar[year].count + 1,
       };
+    }
+
+    // Calculate average values for each property within a year
+    for (const yearData of Object.values(formattedDataBar)) {
+      yearData.impact = Math.round(yearData.impact / yearData.count);
+      yearData.intensity = Math.round(yearData.intensity / yearData.count);
+      yearData.relevance = Math.round(yearData.relevance / yearData.count);
+      yearData.likelihood = Math.round(yearData.likelihood / yearData.count);
     }
 
     const formattedDataBarArr = Object.values(formattedDataBar);
     return [formattedDataBarArr];
   }, [data]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  console.log('sorted', sortedYears);
 
   return (
     <Box m='1.5rem 2.5rem'>
@@ -124,6 +135,7 @@ const Endyear = () => {
         setEndDate={setEndDate}
         formattedData={formattedDataLine}
         setStartDate={setStartDate}
+        sortedYears={sortedYears}
         data={data}
         isLoading={isLoading}
       />

@@ -2,7 +2,7 @@ import { Box, Typography, useTheme } from '@mui/material';
 import { ResponsiveBar } from '@nivo/bar';
 
 const BarChart = ({ formattedData, data, isLoading, chartTitle }) => {
-  const keys = ['intensity', 'impact', 'relevance', 'likelihood'];
+  const keys = ['impact', 'intensity', 'relevance', 'likelihood'];
   const theme = useTheme();
   return (
     <Box
@@ -58,7 +58,7 @@ const BarChart = ({ formattedData, data, isLoading, chartTitle }) => {
           }}
           keys={keys}
           indexBy='year'
-          margin={{ top: 50, right: 130, bottom: 50, left: 60 }}
+          margin={{ top: 50, right: 50, bottom: 70, left: 60 }}
           padding={0.3}
           colors={{ scheme: 'category10' }}
           axisBottom={{
@@ -70,33 +70,39 @@ const BarChart = ({ formattedData, data, isLoading, chartTitle }) => {
             legendOffset: 32,
           }}
           axisLeft={{
+            orient: 'left',
+            tickOuterSize: 0,
             tickSize: 5,
             tickPadding: 5,
             tickRotation: 0,
-            legend: 'Value',
+            legend: 'Values',
+            legendOffset: -50,
             legendPosition: 'middle',
-            legendOffset: -40,
           }}
+          enableGridY={false}
           labelSkipWidth={12}
           labelSkipHeight={12}
           legends={[
             {
               dataFrom: 'keys',
-              anchor: 'bottom-right',
+              anchor: 'top-right',
               direction: 'column',
               justify: false,
-              translateX: 120,
+              translateX: 50,
               translateY: 0,
-              itemsSpacing: 2,
-              itemWidth: 100,
+              itemsSpacing: 0,
+              itemWidth: 80,
               itemHeight: 20,
               itemDirection: 'left-to-right',
               itemOpacity: 0.85,
-              symbolSize: 20,
+              symbolSize: 12,
+              symbolShape: 'circle',
+              symbolBorderColor: 'rgba(0, 0, 0, .5)',
               effects: [
                 {
                   on: 'hover',
                   style: {
+                    itemBackground: 'rgba(0, 0, 0, .03)',
                     itemOpacity: 1,
                   },
                 },

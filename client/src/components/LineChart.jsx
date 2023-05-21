@@ -103,26 +103,24 @@ const LineChart = ({
             stacked: false,
             reverse: false,
           }}
-          yFormat=' >-.2f'
           curve='catmullRom'
           axisTop={null}
           axisRight={null}
           axisBottom={{
-            orient: 'bottom',
-            tickSize: 5,
-            tickPadding: 5,
-            tickRotation: 90,
-            legend: 'Year',
-            legendOffset: 60,
-            legendPosition: 'middle',
-            // format: (value) => new Date(value).getFullYear(),
-          }}
-          axisLeft={{
-            orient: 'left',
             tickSize: 5,
             tickPadding: 5,
             tickRotation: 0,
-            legend: 'Total',
+            legend: 'Year',
+            legendPosition: 'middle',
+            legendOffset: 32,
+          }}
+          axisLeft={{
+            orient: 'left',
+            tickOuterSize: 0,
+            tickSize: 5,
+            tickPadding: 5,
+            tickRotation: 0,
+            legend: 'Values',
             legendOffset: -50,
             legendPosition: 'middle',
           }}
@@ -145,7 +143,7 @@ const LineChart = ({
               itemDirection: 'left-to-right',
               itemWidth: 80,
               itemHeight: 20,
-              itemOpacity: 0.75,
+              itemOpacity: 0.85,
               symbolSize: 12,
               symbolShape: 'circle',
               symbolBorderColor: 'rgba(0, 0, 0, .5)',
