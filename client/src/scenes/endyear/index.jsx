@@ -77,82 +77,42 @@ const Endyear = () => {
     return [formattedDataLine];
   }, [data, startDate, endDate]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  console.log(formattedDataLine);
+  // console.log(formattedDataLine);
 
   const [formattedDataBar] = useMemo(() => {
     if (!data) return [];
 
-    // console.log(data);
+    const formattedDataBar = {};
 
-    const impactBar = {
-      id: 'Impact',
-      color: theme.palette.secondary.main,
-      data: [],
-    };
-    const intensityBar = {
-      id: 'Intensity',
-      color: theme.palette.secondary[600],
-      data: [],
-    };
-    const relevanceBar = {
-      id: 'Relevance',
-      color: theme.palette.secondary[600],
-      data: [],
-    };
-    const likelihoodBar = {
-      id: 'Likelihood',
-      color: theme.palette.secondary[600],
-      data: [],
-    };
-
-    Object.values(data).forEach(
-      ({ end_year, impact, intensity, relevance, likelihood }) => {
-        const dateFormatted = new Date(end_year, 0, 1);
-        if (
-          dateFormatted >= startDate &&
-          dateFormatted <= endDate &&
-          impact !== null && // Skip empty values
-          intensity !== null && // Skip empty values
-          relevance !== null &&
-          likelihood !== null
-        ) {
-          const yearDate = new Date(end_year, 0, 1);
-          impactBar.data = [
-            ...impactBar.data,
-            {
-              yearDate: yearDate.getFullYear(),
-              Impact: impact,
-            },
-          ];
-          intensityBar.data = [
-            ...intensityBar.data,
-            {
-              yearDate: yearDate.getFullYear(),
-              Intensity: intensity,
-            },
-          ];
-          relevanceBar.data = [
-            ...relevanceBar.data,
-            { yearDate: yearDate.getFullYear(), Relevance: relevance },
-          ];
-          likelihoodBar.data = [
-            ...likelihoodBar.data,
-            { yearDate: yearDate.getFullYear(), Likelihood: likelihood },
-          ];
-        }
+    // Populate formattedDataBar object with default values for each year
+    for (const item of data) {
+      const year = item.end_year;
+      if (!formattedDataBar[year]) {
+        formattedDataBar[year] = {
+          year,
+          intensity: 0,
+          impact: 0,
+          relevance: 0,
+          likelihood: 0,
+        };
       }
-    );
+    }
 
-    const formattedDataBar = [
-      impactBar,
-      intensityBar,
-      relevanceBar,
-      likelihoodBar,
-    ];
-    return [formattedDataBar];
-  }, [data, startDate, endDate]); // eslint-disable-line react-hooks/exhaustive-deps
+    // Assign actual data values to corresponding years
+    for (const item of data) {
+      const year = item.end_year;
+      formattedDataBar[year] = {
+        ...formattedDataBar[year],
+        intensity: item.intensity,
+        impact: item.impact,
+        relevance: item.relevance,
+        likelihood: item.likelihood,
+      };
+    }
 
-  console.log(formattedDataBar);
+    const formattedDataBarArr = Object.values(formattedDataBar);
+    return [formattedDataBarArr];
+  }, [data]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <Box m='1.5rem 2.5rem'>

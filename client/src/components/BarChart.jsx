@@ -2,9 +2,8 @@ import { Box, Typography, useTheme } from '@mui/material';
 import { ResponsiveBar } from '@nivo/bar';
 
 const BarChart = ({ formattedData, data, isLoading, chartTitle }) => {
-  const keys = ['Intensity', 'Impact', 'relevance', 'likelihood'];
+  const keys = ['intensity', 'impact', 'relevance', 'likelihood'];
   const theme = useTheme();
-  console.log(formattedData);
   return (
     <Box
       height='75vh'
@@ -23,21 +22,45 @@ const BarChart = ({ formattedData, data, isLoading, chartTitle }) => {
       {data || !isLoading ? (
         <ResponsiveBar
           data={formattedData}
-          keys={keys}
-          indexBy='yearDate'
-          padding={0.3}
-          innerPadding={1}
-          groupMode='grouped'
-          colors={{ scheme: 'category10' }}
-          margin={{ top: 50, right: 50, bottom: 70, left: 60 }}
-          valueScale={{ type: 'linear' }}
-          indexScale={{ type: 'band', round: true }}
-          borderColor={{
-            from: 'color',
-            modifiers: [['darker', 1.6]],
+          theme={{
+            axis: {
+              domain: {
+                line: {
+                  stroke: theme.palette.secondary[200],
+                },
+              },
+              legend: {
+                text: {
+                  fill: theme.palette.secondary[200],
+                },
+              },
+              ticks: {
+                line: {
+                  stroke: theme.palette.secondary[200],
+                  strokeWidth: 1,
+                },
+                text: {
+                  fill: theme.palette.secondary[200],
+                },
+              },
+            },
+            legends: {
+              text: {
+                fill: theme.palette.secondary[200],
+              },
+            },
+            tooltip: {
+              container: {
+                color: theme.palette.secondary[200],
+                backgroundColor: theme.palette.primary.main,
+              },
+            },
           }}
-          axisTop={null}
-          axisRight={null}
+          keys={keys}
+          indexBy='year'
+          margin={{ top: 50, right: 130, bottom: 50, left: 60 }}
+          padding={0.3}
+          colors={{ scheme: 'category10' }}
           axisBottom={{
             tickSize: 5,
             tickPadding: 5,
@@ -50,16 +73,12 @@ const BarChart = ({ formattedData, data, isLoading, chartTitle }) => {
             tickSize: 5,
             tickPadding: 5,
             tickRotation: 0,
-            legend: 'Values',
+            legend: 'Value',
             legendPosition: 'middle',
             legendOffset: -40,
           }}
           labelSkipWidth={12}
           labelSkipHeight={12}
-          labelTextColor={{
-            from: 'color',
-            modifiers: [['darker', 1.6]],
-          }}
           legends={[
             {
               dataFrom: 'keys',
@@ -84,11 +103,9 @@ const BarChart = ({ formattedData, data, isLoading, chartTitle }) => {
               ],
             },
           ]}
-          role='application'
-          ariaLabel='Nivo bar chart demo'
-          barAriaLabel={(e) =>
-            e.id + ': ' + e.formattedValue + ' in country: ' + e.indexValue
-          }
+          animate={true}
+          motionStiffness={90}
+          motionDamping={15}
         />
       ) : (
         <>Loading...</>
