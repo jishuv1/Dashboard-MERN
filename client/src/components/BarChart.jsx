@@ -9,8 +9,9 @@ const BarChart = ({
   keys,
   indexBy,
   legendBottom,
+  bottomMargin = 70,
+  bottomLegendOffset = 40,
 }) => {
-  // const keys = ['impact', 'intensity', 'relevance', 'likelihood'];
   const theme = useTheme();
   return (
     <Box
@@ -66,16 +67,16 @@ const BarChart = ({
           }}
           keys={keys}
           indexBy={`${indexBy}`}
-          margin={{ top: 50, right: 50, bottom: 70, left: 60 }}
-          padding={0.3}
+          margin={{ top: 20, right: 50, bottom: bottomMargin, left: 60 }}
+          padding={0.4}
           colors={{ scheme: 'category10' }}
           axisBottom={{
             tickSize: 5,
             tickPadding: 5,
-            tickRotation: 0,
+            tickRotation: -45,
             legend: `${legendBottom}`,
             legendPosition: 'middle',
-            legendOffset: 32,
+            legendOffset: bottomLegendOffset,
           }}
           axisLeft={{
             orient: 'left',

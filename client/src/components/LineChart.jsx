@@ -12,6 +12,8 @@ const LineChart = ({
   isLoading,
   chartTitle,
   lengendBottom,
+  bottomMargin = 80,
+  bottomLegendOffset = 40,
 }) => {
   const theme = useTheme();
   return (
@@ -97,7 +99,7 @@ const LineChart = ({
             },
           }}
           colors={{ scheme: 'category10' }}
-          margin={{ top: 50, right: 50, bottom: 70, left: 60 }}
+          margin={{ top: 50, right: 50, bottom: bottomMargin, left: 60 }}
           xScale={{ type: 'point' }}
           yScale={{
             type: 'linear',
@@ -112,10 +114,10 @@ const LineChart = ({
           axisBottom={{
             tickSize: 5,
             tickPadding: 5,
-            tickRotation: 0,
+            tickRotation: -45,
             legend: `${lengendBottom}`,
             legendPosition: 'middle',
-            legendOffset: 32,
+            legendOffset: bottomLegendOffset,
           }}
           axisLeft={{
             orient: 'left',

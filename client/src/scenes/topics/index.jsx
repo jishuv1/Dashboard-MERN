@@ -153,8 +153,6 @@ const Topics = () => {
     return [pieChartData];
   }, [data, topicCountMap]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  console.log('formattedDataBar', formattedDataBar);
-
   return (
     <Box m='1.5rem 2.5rem'>
       <Header title='TOPIC' subtitle='Chart of TOPIC' />
@@ -164,6 +162,7 @@ const Topics = () => {
         data={data}
         isLoading={isLoading}
         lengendBottom='Topics'
+        bottomLegendOffset={50}
       />
       <br />
       <br />
@@ -175,6 +174,7 @@ const Topics = () => {
         keys={['impact', 'intensity', 'relevance', 'likelihood']}
         indexBy='topic'
         legendBottom='Topics'
+        bottomLegendOffset={50}
       />
       <br />
       <br />

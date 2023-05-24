@@ -6,7 +6,10 @@ const BreakdownChart = ({ formattedData, data, isLoading, chartTitle }) => {
   const theme = useTheme();
 
   return (
-    <Box sx={{ p: 2, border: `1px dashed ${theme.palette.secondary[100]}` }}>
+    <Box
+      height='60vh'
+      sx={{ p: 2, border: `1px dashed ${theme.palette.secondary[100]}` }}
+    >
       <Typography
         variant='h5'
         color={theme.palette.secondary[100]}

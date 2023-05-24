@@ -130,8 +130,6 @@ const Endyear = () => {
     return [pieChartData];
   }, [formattedDataBar]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  console.log('formatted data bar', formattedDataBar);
-
   return (
     <Box m='1.5rem 2.5rem'>
       <Header title='END YEAR' subtitle='Chart of END YEAR' />
