@@ -1,7 +1,15 @@
 import { Box, Typography, useTheme } from '@mui/material';
 import { ResponsiveBar } from '@nivo/bar';
 
-const BarChart = ({ formattedData, data, isLoading, chartTitle, keys }) => {
+const BarChart = ({
+  formattedData,
+  data,
+  isLoading,
+  chartTitle,
+  keys,
+  indexBy,
+  legendBottom,
+}) => {
   // const keys = ['impact', 'intensity', 'relevance', 'likelihood'];
   const theme = useTheme();
   return (
@@ -57,7 +65,7 @@ const BarChart = ({ formattedData, data, isLoading, chartTitle, keys }) => {
             },
           }}
           keys={keys}
-          indexBy='year'
+          indexBy={`${indexBy}`}
           margin={{ top: 50, right: 50, bottom: 70, left: 60 }}
           padding={0.3}
           colors={{ scheme: 'category10' }}
@@ -65,7 +73,7 @@ const BarChart = ({ formattedData, data, isLoading, chartTitle, keys }) => {
             tickSize: 5,
             tickPadding: 5,
             tickRotation: 0,
-            legend: 'Year',
+            legend: `${legendBottom}`,
             legendPosition: 'middle',
             legendOffset: 32,
           }}

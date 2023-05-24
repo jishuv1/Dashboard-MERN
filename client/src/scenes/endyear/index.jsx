@@ -16,25 +16,12 @@ const Endyear = () => {
   const [formattedDataLine] = useMemo(() => {
     if (!data) return [];
 
-    const impactLine = {
-      id: 'Impact',
-      color: theme.palette.secondary.main,
-      data: [],
-    };
-    const intensityLine = {
-      id: 'Intensity',
-      color: theme.palette.secondary[600],
-      data: [],
-    };
-    const relevanceLine = {
-      id: 'Relevance',
-      color: theme.palette.secondary[600],
-      data: [],
-    };
-    const likelihoodLine = {
-      id: 'Likelihood',
-      color: theme.palette.secondary[600],
-      data: [],
+    // Create a map to store the data arrays for each property
+    const propertyDataMap = {
+      Impact: [],
+      Intensity: [],
+      Relevance: [],
+      Likelihood: [],
     };
 
     // Create a set to keep track of unique years
@@ -47,88 +34,47 @@ const Endyear = () => {
         const year = yearDate.getFullYear();
         uniqueYears.add(year);
 
-        impactLine.data.push({ x: year, y: impact });
-        intensityLine.data.push({ x: year, y: intensity });
-        relevanceLine.data.push({ x: year, y: relevance });
-        likelihoodLine.data.push({ x: year, y: likelihood });
+        propertyDataMap.Impact.push({ x: year, y: impact });
+        propertyDataMap.Intensity.push({ x: year, y: intensity });
+        propertyDataMap.Relevance.push({ x: year, y: relevance });
+        propertyDataMap.Likelihood.push({ x: year, y: likelihood });
       }
     }
 
-    // Sort the years in ascending order
-    const sortedYears = Array.from(uniqueYears).sort((a, b) => a - b);
+    // Create the formatted data array with average values for each property
+    const formattedDataLine = Object.entries(propertyDataMap).map(
+      ([id, dataPoints]) => {
+        const yearDataMap = new Map();
 
-    // Fill in missing years with default data
-    const formattedDataLine = [
-      impactLine,
-      intensityLine,
-      relevanceLine,
-      likelihoodLine,
-    ].map((line) => ({
-      ...line,
-      data: sortedYears.map((year) => {
-        const existingData = line.data.find((d) => d.x === year);
-        const defaultValue = { x: year, y: 0 };
+        // Group data points by year
+        dataPoints.forEach((dataPoint) => {
+          const { x: year, y } = dataPoint;
+          if (!yearDataMap.has(year)) {
+            yearDataMap.set(year, []);
+          }
+          yearDataMap.get(year).push(y);
+        });
 
-        if (existingData) {
-          return { ...existingData }; // Clone the existing data
-        } else {
-          return defaultValue;
-        }
-      }),
-    }));
+        // Calculate average value for each year
+        const averagedDataPoints = Array.from(yearDataMap).map(
+          ([year, values]) => {
+            const count = values.length;
+            const sum = values.reduce((acc, val) => acc + val, 0);
+            const average = count > 0 ? sum / count : 0;
+            return { x: year, y: average };
+          }
+        );
 
-    // Calculate average values for each property within a year
-    for (const yearData of formattedDataLine) {
-      const count = yearData.data.length; // Get the count of data points for the year
-
-      // Calculate sum of values for each property within a year
-      let sumImpact = 0;
-      let sumIntensity = 0;
-      let sumRelevance = 0;
-      let sumLikelihood = 0;
-      // Iterate over data to collect unique years and populate the data arrays
-      for (const {
-        end_year,
-        impact,
-        intensity,
-        relevance,
-        likelihood,
-      } of data) {
-        const yearDate = new Date(end_year, 0, 1);
-        if (yearDate >= startDate && yearDate <= endDate) {
-          const year = yearDate.getFullYear();
-          uniqueYears.add(year);
-
-          impactLine.data.push({ x: year, y: impact });
-          intensityLine.data.push({ x: year, y: intensity });
-          relevanceLine.data.push({ x: year, y: relevance });
-          likelihoodLine.data.push({ x: year, y: likelihood });
-        }
+        return {
+          id,
+          color: theme.palette.secondary.main,
+          data: averagedDataPoints,
+        };
       }
+    );
 
-      yearData.data.forEach((dataPoint) => {
-        sumImpact += dataPoint.y;
-        sumIntensity += dataPoint.y;
-        sumRelevance += dataPoint.y;
-        sumLikelihood += dataPoint.y;
-      });
-
-      // Calculate average values for each property within a year
-      const averageImpact = count > 0 ? sumImpact / count : 0;
-      const averageIntensity = count > 0 ? sumIntensity / count : 0;
-      const averageRelevance = count > 0 ? sumRelevance / count : 0;
-      const averageLikelihood = count > 0 ? sumLikelihood / count : 0;
-
-      yearData.data.forEach((dataPoint) => {
-        dataPoint.y = Math.round(dataPoint.y); // Keep the original value
-        dataPoint.averageImpact = Math.round(averageImpact); // Assign average Impact value
-        dataPoint.averageIntensity = Math.round(averageIntensity); // Assign average Intensity value
-        dataPoint.averageRelevance = Math.round(averageRelevance); // Assign average Relevance value
-        dataPoint.averageLikelihood = Math.round(averageLikelihood); // Assign average Likelihood value
-      });
-    }
-    return [formattedDataLine]; // Return sortedYears as well
-  }, [data, startDate, endDate]); // eslint-disable-line react-hooks/exhaustive-deps
+    return [formattedDataLine];
+  }, [data, startDate, endDate, theme]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const [formattedDataBar] = useMemo(() => {
     if (!data) return [];
@@ -184,6 +130,8 @@ const Endyear = () => {
     return [pieChartData];
   }, [formattedDataBar]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  console.log('formatted data bar', formattedDataBar);
+
   return (
     <Box m='1.5rem 2.5rem'>
       <Header title='END YEAR' subtitle='Chart of END YEAR' />
@@ -196,6 +144,7 @@ const Endyear = () => {
         setStartDate={setStartDate}
         data={data}
         isLoading={isLoading}
+        lengendBottom='Year'
       />
       <br />
       <br />
@@ -205,6 +154,8 @@ const Endyear = () => {
         data={data}
         isLoading={isLoading}
         keys={['impact', 'intensity', 'relevance', 'likelihood']}
+        indexBy='year'
+        legendBottom='Year'
       />
       <br />
       <br />

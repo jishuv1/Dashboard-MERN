@@ -11,6 +11,7 @@ const LineChart = ({
   data,
   isLoading,
   chartTitle,
+  lengendBottom,
 }) => {
   const theme = useTheme();
   return (
@@ -28,33 +29,35 @@ const LineChart = ({
           {chartTitle}
         </Typography>
       </Box>
-      <Box display='flex' justifyContent='flex-end'>
-        <Box>
-          <DatePicker
-            selected={startDate}
-            onChange={(date) => setStartDate(date)}
-            showYearPicker
-            dateFormat='yyyy'
-            yearItemNumber={20}
-            selectsStart
-            startDate={startDate}
-            endDate={endDate}
-          />
+      {startDate && (
+        <Box display='flex' justifyContent='flex-end'>
+          <Box>
+            <DatePicker
+              selected={startDate}
+              onChange={(date) => setStartDate(date)}
+              showYearPicker
+              dateFormat='yyyy'
+              yearItemNumber={20}
+              selectsStart
+              startDate={startDate}
+              endDate={endDate}
+            />
+          </Box>
+          <Box>
+            <DatePicker
+              selected={endDate}
+              onChange={(date) => setEndDate(date)}
+              showYearPicker
+              dateFormat='yyyy'
+              yearItemNumber={20}
+              selectsEnd
+              startDate={startDate}
+              endDate={endDate}
+              minDate={startDate}
+            />
+          </Box>
         </Box>
-        <Box>
-          <DatePicker
-            selected={endDate}
-            onChange={(date) => setEndDate(date)}
-            showYearPicker
-            dateFormat='yyyy'
-            yearItemNumber={20}
-            selectsEnd
-            startDate={startDate}
-            endDate={endDate}
-            minDate={startDate}
-          />
-        </Box>
-      </Box>
+      )}
 
       {data || !isLoading ? (
         <ResponsiveLine
@@ -110,7 +113,7 @@ const LineChart = ({
             tickSize: 5,
             tickPadding: 5,
             tickRotation: 0,
-            legend: 'Year',
+            legend: `${lengendBottom}`,
             legendPosition: 'middle',
             legendOffset: 32,
           }}
