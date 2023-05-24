@@ -5,6 +5,7 @@ import { Box, useTheme } from '@mui/material';
 import 'react-datepicker/dist/react-datepicker.css';
 import LineChart from 'components/LineChart';
 import BarChart from 'components/BarChart';
+import PieChart from 'components/PieChart';
 
 const Endyear = () => {
   const [startDate, setStartDate] = useState(new Date(2016, 0, 1));
@@ -12,7 +13,7 @@ const Endyear = () => {
   const { data, isLoading } = useGetDataEndyearQuery();
   const theme = useTheme();
 
-  const [formattedDataLine, sortedYears] = useMemo(() => {
+  const [formattedDataLine] = useMemo(() => {
     if (!data) return [];
 
     const impactLine = {
@@ -76,10 +77,58 @@ const Endyear = () => {
       }),
     }));
 
-    return [formattedDataLine, sortedYears]; // Return sortedYears as well
-  }, [data, startDate, endDate]); // eslint-disable-line react-hooks/exhaustive-deps
+    // Calculate average values for each property within a year
+    for (const yearData of formattedDataLine) {
+      const count = yearData.data.length; // Get the count of data points for the year
 
-  // console.log(formattedDataLine);
+      // Calculate sum of values for each property within a year
+      let sumImpact = 0;
+      let sumIntensity = 0;
+      let sumRelevance = 0;
+      let sumLikelihood = 0;
+      // Iterate over data to collect unique years and populate the data arrays
+      for (const {
+        end_year,
+        impact,
+        intensity,
+        relevance,
+        likelihood,
+      } of data) {
+        const yearDate = new Date(end_year, 0, 1);
+        if (yearDate >= startDate && yearDate <= endDate) {
+          const year = yearDate.getFullYear();
+          uniqueYears.add(year);
+
+          impactLine.data.push({ x: year, y: impact });
+          intensityLine.data.push({ x: year, y: intensity });
+          relevanceLine.data.push({ x: year, y: relevance });
+          likelihoodLine.data.push({ x: year, y: likelihood });
+        }
+      }
+
+      yearData.data.forEach((dataPoint) => {
+        sumImpact += dataPoint.y;
+        sumIntensity += dataPoint.y;
+        sumRelevance += dataPoint.y;
+        sumLikelihood += dataPoint.y;
+      });
+
+      // Calculate average values for each property within a year
+      const averageImpact = count > 0 ? sumImpact / count : 0;
+      const averageIntensity = count > 0 ? sumIntensity / count : 0;
+      const averageRelevance = count > 0 ? sumRelevance / count : 0;
+      const averageLikelihood = count > 0 ? sumLikelihood / count : 0;
+
+      yearData.data.forEach((dataPoint) => {
+        dataPoint.y = Math.round(dataPoint.y); // Keep the original value
+        dataPoint.averageImpact = Math.round(averageImpact); // Assign average Impact value
+        dataPoint.averageIntensity = Math.round(averageIntensity); // Assign average Intensity value
+        dataPoint.averageRelevance = Math.round(averageRelevance); // Assign average Relevance value
+        dataPoint.averageLikelihood = Math.round(averageLikelihood); // Assign average Likelihood value
+      });
+    }
+    return [formattedDataLine]; // Return sortedYears as well
+  }, [data, startDate, endDate]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const [formattedDataBar] = useMemo(() => {
     if (!data) return [];
@@ -123,7 +172,17 @@ const Endyear = () => {
     return [formattedDataBarArr];
   }, [data]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  console.log('sorted', sortedYears);
+  const [formattedDataPie] = useMemo(() => {
+    if (!data) return [[]];
+
+    const pieChartData = Object.values(formattedDataBar).map((yearData) => ({
+      id: yearData.year,
+      label: yearData.year.toString(),
+      value: yearData.count,
+    }));
+
+    return [pieChartData];
+  }, [formattedDataBar]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <Box m='1.5rem 2.5rem'>
@@ -135,7 +194,6 @@ const Endyear = () => {
         setEndDate={setEndDate}
         formattedData={formattedDataLine}
         setStartDate={setStartDate}
-        sortedYears={sortedYears}
         data={data}
         isLoading={isLoading}
       />
@@ -144,6 +202,15 @@ const Endyear = () => {
       <BarChart
         chartTitle={'BAR Chart'}
         formattedData={formattedDataBar}
+        data={data}
+        isLoading={isLoading}
+        keys={['impact', 'intensity', 'relevance', 'likelihood']}
+      />
+      <br />
+      <br />
+      <PieChart
+        chartTitle={'PIE Chart'}
+        formattedData={formattedDataPie}
         data={data}
         isLoading={isLoading}
       />

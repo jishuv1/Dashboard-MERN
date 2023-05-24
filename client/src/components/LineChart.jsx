@@ -131,6 +131,7 @@ const LineChart = ({
           pointBorderWidth={2}
           pointBorderColor={{ from: 'serieColor' }}
           pointLabelYOffset={-12}
+          labelSkipHeight={12}
           useMesh={true}
           legends={[
             {

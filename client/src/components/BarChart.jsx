@@ -1,8 +1,8 @@
 import { Box, Typography, useTheme } from '@mui/material';
 import { ResponsiveBar } from '@nivo/bar';
 
-const BarChart = ({ formattedData, data, isLoading, chartTitle }) => {
-  const keys = ['impact', 'intensity', 'relevance', 'likelihood'];
+const BarChart = ({ formattedData, data, isLoading, chartTitle, keys }) => {
+  // const keys = ['impact', 'intensity', 'relevance', 'likelihood'];
   const theme = useTheme();
   return (
     <Box
