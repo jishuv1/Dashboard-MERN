@@ -11,12 +11,22 @@ const BarChart = ({
   legendBottom,
   bottomMargin = 70,
   bottomLegendOffset = 40,
+  isDashboard = false,
 }) => {
   const theme = useTheme();
   return (
     <Box
-      height='75vh'
-      sx={{ p: 2, border: `1px dashed ${theme.palette.secondary[100]}` }}
+      sx={
+        isDashboard
+          ? {
+              height: '20rem',
+            }
+          : {
+              height: '75vh',
+              p: 2,
+              border: `1px dashed ${theme.palette.secondary[100]}`,
+            }
+      }
     >
       <Box>
         <Typography
@@ -31,6 +41,8 @@ const BarChart = ({
       {data || !isLoading ? (
         <ResponsiveBar
           data={formattedData}
+          enableArea={isDashboard}
+          enableLabel={!isDashboard}
           theme={{
             axis: {
               domain: {
@@ -74,7 +86,7 @@ const BarChart = ({
             tickSize: 5,
             tickPadding: 5,
             tickRotation: -45,
-            legend: `${legendBottom}`,
+            legend: isDashboard ? '' : `${legendBottom}`,
             legendPosition: 'middle',
             legendOffset: bottomLegendOffset,
           }}

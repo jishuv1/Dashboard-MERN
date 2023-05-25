@@ -2,13 +2,28 @@ import React from 'react';
 import { ResponsivePie } from '@nivo/pie';
 import { Box, Typography, useTheme } from '@mui/material';
 
-const BreakdownChart = ({ formattedData, data, isLoading, chartTitle }) => {
+const BreakdownChart = ({
+  formattedData,
+  data,
+  isLoading,
+  chartTitle,
+  isDashboard = false,
+}) => {
   const theme = useTheme();
 
   return (
     <Box
-      height='60vh'
-      sx={{ p: 2, border: `1px dashed ${theme.palette.secondary[100]}` }}
+      sx={
+        isDashboard
+          ? {
+              height: '20rem',
+            }
+          : {
+              height: '60vh',
+              p: 2,
+              border: `1px dashed ${theme.palette.secondary[100]}`,
+            }
+      }
     >
       <Typography
         variant='h5'
@@ -21,14 +36,15 @@ const BreakdownChart = ({ formattedData, data, isLoading, chartTitle }) => {
 
       {data || !isLoading ? (
         <Box
-          height={'400px'}
+          height={isDashboard ? '400px' : '100%'}
           width={undefined}
-          minHeight={'325px'}
-          minWidth={'325px'}
+          minHeight={isDashboard ? '325px' : undefined}
+          minWidth={isDashboard ? '325px' : undefined}
           position='relative'
         >
           <ResponsivePie
             data={formattedData}
+            enableArea={isDashboard}
             theme={{
               axis: {
                 domain: {
@@ -64,7 +80,11 @@ const BreakdownChart = ({ formattedData, data, isLoading, chartTitle }) => {
               },
             }}
             colors={{ scheme: 'category10' }}
-            margin={{ top: 40, right: 80, bottom: 80, left: 80 }}
+            margin={
+              isDashboard
+                ? { top: 10, right: 50, bottom: 100, left: 10 }
+                : { top: 40, right: 80, bottom: 80, left: 80 }
+            }
             sortByValue={true}
             innerRadius={0.45}
             activeOuterRadiusOffset={8}
@@ -73,7 +93,7 @@ const BreakdownChart = ({ formattedData, data, isLoading, chartTitle }) => {
               from: 'color',
               modifiers: [['darker', 0.2]],
             }}
-            enableArcLinkLabels={true}
+            enableArcLinkLabels={isDashboard ? false : true}
             arcLinkLabelsTextColor={theme.palette.secondary[200]}
             arcLinkLabelsThickness={2}
             arcLinkLabelsColor={{ from: 'color' }}
@@ -83,30 +103,7 @@ const BreakdownChart = ({ formattedData, data, isLoading, chartTitle }) => {
               from: 'color',
               modifiers: [['darker', 2]],
             }}
-            // legends={[
-            //   {
-            //     anchor: 'top-right',
-            //     direction: 'column',
-            //     justify: false,
-            //     translateX: 20,
-            //     translateY: 50,
-            //     itemsSpacing: 0,
-            //     itemWidth: 80,
-            //     itemHeight: 20,
-            //     itemDirection: 'left-to-right',
-            //     itemOpacity: 1,
-            //     symbolSize: 18,
-            //     symbolShape: 'circle',
-            //     effects: [
-            //       {
-            //         on: 'hover',
-            //         style: {
-            //           itemTextColor: theme.palette.primary[500],
-            //         },
-            //       },
-            //     ],
-            //   },
-            // ]}
+            legends={[]}
           />
           <Box
             position='absolute'

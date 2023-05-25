@@ -1,12 +1,13 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import FlexBetween from 'components/FlexBetween';
 import Header from 'components/Header';
+import GeoChart from 'components/GeoChart';
 import {
   DownloadOutlined,
-  Email,
-  PointOfSale,
-  PersonAdd,
-  Traffic,
+  NewspaperOutlined,
+  TopicOutlined,
+  BoltOutlined,
+  SourceOutlined,
 } from '@mui/icons-material';
 import {
   Box,
@@ -15,40 +16,89 @@ import {
   useTheme,
   useMediaQuery,
 } from '@mui/material';
-import { DataGrid } from '@mui/x-data-grid';
 import PieChart from 'components/PieChart';
-import {
-  useGetDataEndyearQuery,
-  useGetTopicQuery,
-  useGetSectorQuery,
-  useGetPestQuery,
-  useGetSourceQuery,
-  useGetCountryQuery,
-} from 'state/api';
+import { useGetDataEndyearQuery, useGetTopicQuery } from 'state/api';
 import StatBox from 'components/StatBox';
+import BarChart from 'components/BarChart';
 
 const Dashboard = () => {
   const theme = useTheme();
   const isNonMediumScreens = useMediaQuery('(min-width: 1200px)');
-  // const { data, isLoading } = useGetDashboardQuery();
+  const { data: data1, isLoading: isLoading1 } = useGetDataEndyearQuery();
+  const { data: data2, isLoading: isLoading2 } = useGetTopicQuery();
 
-  const columns = [
-    {
-      field: 'Data',
-      headerName: 'Data',
-      flex: 1,
-    },
-    {
-      field: 'Most Articles',
-      headerName: 'Most Articles',
-      flex: 1,
-    },
-    {
-      field: 'Values',
-      headerName: 'Values',
-      flex: 1,
-    },
-  ];
+  const [formattedDataBar] = useMemo(() => {
+    if (!data1) return [];
+
+    const formattedDataBar = {};
+
+    // Accumulate values and count occurrences for each year
+    for (const {
+      end_year,
+      impact,
+      intensity,
+      relevance,
+      likelihood,
+    } of data1) {
+      const year = end_year;
+      if (!formattedDataBar[year]) {
+        formattedDataBar[year] = {
+          year,
+          impact: 0,
+          intensity: 0,
+          relevance: 0,
+          likelihood: 0,
+          count: 0,
+        };
+      }
+
+      // Accumulate the values for each property within a year
+      formattedDataBar[year] = {
+        ...formattedDataBar[year],
+        impact: formattedDataBar[year].impact + impact,
+        intensity: formattedDataBar[year].intensity + intensity,
+        relevance: formattedDataBar[year].relevance + relevance,
+        likelihood: formattedDataBar[year].likelihood + likelihood,
+        count: formattedDataBar[year].count + 1,
+      };
+    }
+
+    // Calculate average values for each property within a year
+    for (const yearData of Object.values(formattedDataBar)) {
+      yearData.impact = Math.round(yearData.impact / yearData.count);
+      yearData.intensity = Math.round(yearData.intensity / yearData.count);
+      yearData.relevance = Math.round(yearData.relevance / yearData.count);
+      yearData.likelihood = Math.round(yearData.likelihood / yearData.count);
+    }
+
+    const formattedDataBarArr = Object.values(formattedDataBar);
+    return [formattedDataBarArr];
+  }, [data1]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const [formattedDataPie] = useMemo(() => {
+    if (!data2) return [[]];
+
+    const topicCountMap = {};
+
+    // Accumulate count for each topic
+    for (const { topic } of data2) {
+      if (topic === '') continue;
+
+      if (!topicCountMap[topic]) {
+        topicCountMap[topic] = 0;
+      }
+
+      topicCountMap[topic] += 1;
+    }
+
+    const pieChartData = Object.keys(topicCountMap).map((topic) => ({
+      id: topic,
+      label: topic.toString(),
+      value: topicCountMap[topic],
+    }));
+
+    return [pieChartData];
+  }, [data2]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <Box m='1.5rem 2.5rem'>
@@ -87,7 +137,7 @@ const Dashboard = () => {
           value={1000}
           description='Total Articles'
           icon={
-            <Email
+            <NewspaperOutlined
               sx={{ color: theme.palette.secondary[300], fontSize: '26px' }}
             />
           }
@@ -95,9 +145,10 @@ const Dashboard = () => {
         <StatBox
           title='Topics'
           value={403}
+          increase='40.3%'
           description='OIL'
           icon={
-            <PointOfSale
+            <TopicOutlined
               sx={{ color: theme.palette.secondary[300], fontSize: '26px' }}
             />
           }
@@ -109,14 +160,23 @@ const Dashboard = () => {
           p='1rem'
           borderRadius='0.55rem'
         >
-          {/* <OverviewChart view='sales' isDashboard={true} /> */}
+          <BarChart
+            formattedData={formattedDataBar}
+            data={data1}
+            isLoading={isLoading1}
+            keys={['impact', 'intensity', 'relevance', 'likelihood']}
+            indexBy='year'
+            legendBottom='Year'
+            isDashboard={true}
+          />
         </Box>
         <StatBox
           title='Sectors'
           value={525}
+          increase='52.5%'
           description='Energy'
           icon={
-            <PersonAdd
+            <BoltOutlined
               sx={{ color: theme.palette.secondary[300], fontSize: '26px' }}
             />
           }
@@ -124,51 +184,28 @@ const Dashboard = () => {
         <StatBox
           title='Source'
           value={43}
+          increase='4.3%'
           description='OPEC'
           icon={
-            <Traffic
+            <SourceOutlined
               sx={{ color: theme.palette.secondary[300], fontSize: '26px' }}
             />
           }
         />
 
         {/* ROW 2 */}
-        {/* <Box
+        <Box
           gridColumn='span 8'
           gridRow='span 3'
-          sx={{
-            '& .MuiDataGrid-root': {
-              border: 'none',
-              borderRadius: '5rem',
-            },
-            '& .MuiDataGrid-cell': {
-              borderBottom: 'none',
-            },
-            '& .MuiDataGrid-columnHeaders': {
-              backgroundColor: theme.palette.background.alt,
-              color: theme.palette.secondary[100],
-              borderBottom: 'none',
-            },
-            '& .MuiDataGrid-virtualScroller': {
-              backgroundColor: theme.palette.background.alt,
-            },
-            '& .MuiDataGrid-footerContainer': {
-              backgroundColor: theme.palette.background.alt,
-              color: theme.palette.secondary[100],
-              borderTop: 'none',
-            },
-            '& .MuiDataGrid-toolbarContainer .MuiButton-text': {
-              color: `${theme.palette.secondary[200]} !important`,
-            },
-          }}
+          backgroundColor={theme.palette.background.alt}
+          p='1rem'
+          borderRadius='0.55rem'
         >
-          <DataGrid
-            loading={isLoading || !data}
-            getRowId={(row) => row._id}
-            rows={(data && data.transactions) || []}
-            columns={columns}
-          />
-        </Box> */}
+          <Typography variant='h6' sx={{ color: theme.palette.secondary[100] }}>
+            Articles By Country
+          </Typography>
+          <GeoChart isDashboard={true} />
+        </Box>
         <Box
           gridColumn='span 4'
           gridRow='span 3'
@@ -177,16 +214,20 @@ const Dashboard = () => {
           borderRadius='0.55rem'
         >
           <Typography variant='h6' sx={{ color: theme.palette.secondary[100] }}>
-            Sales By Category
+            Articles By Topic
           </Typography>
-          {/* <PieChart isDashboard={true} /> */}
+          <PieChart
+            isDashboard={true}
+            formattedData={formattedDataPie}
+            data={data2}
+            isLoading={isLoading2}
+          />
           <Typography
             p='0 0.6rem'
             fontSize='0.8rem'
             sx={{ color: theme.palette.secondary[200] }}
           >
-            Breakdown of real states and information via category for revenue
-            made for this year and total sales.
+            Breakdown of articles by topic and nunber of articles on each topic.
           </Typography>
         </Box>
       </Box>

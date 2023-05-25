@@ -9,7 +9,6 @@ import Dashboard from 'scenes/dashboard';
 import Country from 'scenes/country';
 import Endyear from 'scenes/endyear';
 import Pest from 'scenes/pest';
-import Region from 'scenes/region';
 import Sector from 'scenes/sector';
 import Source from 'scenes/source';
 import Topics from 'scenes/topics';
@@ -31,7 +30,6 @@ function App() {
               <Route path='/country' element={<Country />} />
               <Route path='/pest' element={<Pest />} />
               <Route path='/sector' element={<Sector />} />
-              <Route path='/region' element={<Region />} />
               <Route path='/source' element={<Source />} />
               <Route path='/topics' element={<Topics />} />
             </Route>

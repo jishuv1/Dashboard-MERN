@@ -15,7 +15,6 @@ import {
   CalendarMonthOutlined,
   TopicOutlined,
   PropaneOutlined,
-  PublicOutlined,
   PestControlRodentOutlined,
   SourceOutlined,
   LanguageOutlined,
@@ -60,10 +59,6 @@ const navItems = [
   {
     text: 'Source',
     icon: <SourceOutlined />,
-  },
-  {
-    text: 'Region',
-    icon: <PublicOutlined />,
   },
 ];
 
