@@ -19,7 +19,9 @@ const LineChart = ({
   return (
     <Box
       height='75vh'
-      sx={{ p: 2, border: `1px dashed ${theme.palette.secondary[100]}` }}
+      backgroundColor={theme.palette.background.alt}
+      p='1rem'
+      borderRadius='0.55rem'
     >
       <Box>
         <Typography

@@ -16,6 +16,9 @@ const BarChart = ({
   const theme = useTheme();
   return (
     <Box
+      backgroundColor={theme.palette.background.alt}
+      p='1rem'
+      borderRadius='0.55rem'
       sx={
         isDashboard
           ? {
@@ -23,8 +26,6 @@ const BarChart = ({
             }
           : {
               height: '75vh',
-              p: 2,
-              border: `1px dashed ${theme.palette.secondary[100]}`,
             }
       }
     >
