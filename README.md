@@ -1,6 +1,6 @@
 MERN Stack Dashboard App
 
-Project Url : https://dashboard-admin-mern-frontend.onrender.com/
+Project Deployed Url : https://data-visual.vercel.app/
 
 To Run Local
 commands: "npm start" in client folder
